@@ -6,9 +6,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col">
-                                <span>
-                                    Registrar prueba
-                                </span>
+                                <strong>Registrar prueba</strong>                            
                             </div>
                             <div v-if="!hide_card" class="col-auto" style="cursor: pointer" @click="hide_show_card_register(true)">
                                 <i class="fas fa-eye-slash"></i>
@@ -103,16 +101,16 @@
             </div>
             <div :class="{'col-lg-4': hide_card, 'col-lg-3': !hide_card}">
                 <div class="card">
-                    <div class="card-header">Pruebas registradas</div>
+                    <div class="card-header"><strong>Pruebas registradas</strong></div>
                     <div class="card-body" style="padding: 0 !important;">
                         <ul class="list-group">
-                            <li v-for="item in bomb_tests" class="list-group-item active" aria-current="true">
-                                <div class="row">
+                            <li v-for="item in bomb_tests" class="list-group-item" :class="{'active': bomb_test.id == item.id}" aria-current="true" style="cursor: pointer;">
+                                <div class="row" @click="select_bomb_test(item)">
                                     <div class="col">
-                                        {{item.water_well}}
+                                        Pozo: <strong>{{item.water_well}}</strong> - Supervisor: <strong>{{item.supervisor}}</strong>
                                     </div>
-                                    <div class="col-auto" style="cursor: pointer;" title="Exportar prueba">
-                                        <i class="fas fa-download"></i>
+                                    <div class="col-auto" style="cursor: pointer;" title="Exportar prueba" v-if="item.status == 2">
+                                        <buttonGenerateReport :bomb_test="bomb_test" />
                                     </div>
                                 </div>
                             </li>
@@ -122,34 +120,107 @@
             </div>
             <div :class="{'col-lg-6': hide_card, 'col-lg-4': !hide_card}">
                 <div class="card">
-                    <div class="card-header">Ingreso de datos</div>
-                    <div class="card-body mx-3">
+                    <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <strong>Ingreso de datos</strong>
+                                </div>
+                                <div class="col-auto" style="cursor: pointer" v-if="bomb_test.status == 1">
+                                    <button type="button" class="btn btn-success" @click="finally_bomb_test">Finalizar prueba</button>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="card-body mx-3" v-if="bomb_test.status == 1">
                         <carousel :per-page="1" :navigationEnabled="true">
                             <slide>
                                 <div class="form-group mx-2 mt-4">
                                     <div>
-                                        <label for="inputZip">Acumulado</label>
-                                        <input type="text" class="form-control" id="inputZip">
+                                        <label for="accumulated">Acumulado*</label>
+                                        <input v-model="data_bomb_test_field.accumulated" type="number" class="form-control" id="accumulated">
                                     </div>
                                 </div>
                             </slide>
                             <slide>
                                 <div class="form-group mx-2 mt-4">
                                     <div>
-                                        <label for="inputZip">Medicion instantanea (litros/segundos)</label>
-                                        <input type="text" class="form-control" id="inputZip">
+                                        <label for="instant_measurement">Medicion instantanea (litros/segundos)*</label>
+                                        <input v-model="data_bomb_test_field.instant_measurement" type="number" class="form-control" id="instant_measurement">
                                     </div>
                                 </div>
                             </slide>
                             <slide>
                                 <div class="form-group mx-2 mt-4">
                                     <div>
-                                        <label for="inputZip">Columna de agua</label>
-                                        <input type="text" class="form-control" id="inputZip">
+                                        <label for="pressure_psi">Presión (psi)*</label>
+                                        <input v-model="data_bomb_test_field.pressure_psi" type="number" class="form-control" id="pressure_psi">
+                                    </div>
+                                </div>
+                            </slide>
+                            <slide>
+                                <div class="form-group mx-2 mt-4">
+                                    <div>
+                                        <label for="temperature">Temperatura(C°)</label>
+                                        <input v-model="data_bomb_test_field.temperature" type="text" class="form-control" id="temperature">
+                                    </div>
+                                </div>
+                            </slide>
+                            <slide>
+                                <div class="form-group mx-2 mt-4">
+                                    <div>
+                                        <label for="ph">PH</label>
+                                        <input v-model="data_bomb_test_field.ph" type="text" class="form-control" id="ph">
+                                    </div>
+                                </div>
+                            </slide>
+                            <slide>
+                                <div class="form-group mx-2 mt-4">
+                                    <div>
+                                        <label for="inputZip">Conductividad(uS)</label>
+                                        <input v-model="data_bomb_test_field.conduct" type="text" class="form-control" id="inputZip">
+                                    </div>
+                                </div>
+                            </slide>
+                            <slide>
+                                <div class="form-group mx-2 mt-4">
+                                    <div>
+                                        <label for="ppm">PPM</label>
+                                        <input v-model="data_bomb_test_field.ppm" type="text" class="form-control" id="ppm">
+                                    </div>
+                                </div>
+                            </slide>
+                            <slide>
+                                <div class="form-group mx-2 mt-4">
+                                    <div>
+                                        <label for="tds">TDS/Imhoff(ml/L)</label>
+                                        <input v-model="data_bomb_test_field.tds" type="text" class="form-control" id="tds">
+                                    </div>
+                                </div>
+                            </slide>
+                            <slide>
+                                <div class="form-group mx-2 mt-4">
+                                    <div>
+                                        <label for="turbidity">Turbiedad</label>
+                                        <input v-model="data_bomb_test_field.turbidity" type="text" class="form-control" id="turbidity">
+                                    </div>
+                                </div>
+                            </slide>
+                            <slide>
+                                <div class="form-group mx-2 mt-4">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <label for="observation">Observaciónes</label>
+                                            <input v-model="data_bomb_test_field.observation" type="text" class="form-control" id="observation">
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <button type="button" class="btn btn-primary btn-block" @click="register_field_bomb_test">Registrar datos</button>
+                                         </div>
                                     </div>
                                 </div>
                             </slide>
                         </carousel>
+                    </div>
+                    <div class="card-body mx-3 d-flex justify-content-center" v-if="bomb_test.status == 2">
+                        <strong class="align-self-center">La prueba ya ha sido finalizada.</strong>
                     </div>
                 </div>
             </div>
@@ -160,11 +231,13 @@
 <script>
     import axios from 'axios';
     import { Carousel, Slide } from 'vue-carousel';
-    export default {
+    import buttonGenerateReport from './buttonGenerateReport';
+        export default {
         data() {
             return {
                 hide_card: false,
                 bomb_tests: [],
+                bomb_test: {},
                 data_bomb_test: {
                     water_well: null,
                     well_depth: null,
@@ -184,8 +257,6 @@
                     suction_distance: null
                 },
                 data_bomb_test_field: {
-                    hours: null,
-                    minute: null,
                     accumulated: null,
                     instant_measurement: null,
                     water_column: null,
@@ -197,19 +268,90 @@
                     ppm: null,
                     tds: null,
                     turbidity: null,
-                    observation: null
+                    observation: null,
+                    bomb_test_id: null
+                },
+                docDefinition: {
+                    compress: false,
+                    pageSize: "LETTER",
+                    pageMargins: [30, 20, 30, 20],
+                    footer: {
+                        table: {
+                            heights: 0,
+                            headerRows: 1,
+                            widths: ["*"],
+                            body: 
+                            [
+                                [
+                                    {
+                                        alignment: "center",
+                                        bold: true,
+                                        border: [false, false, false, false],
+                                        color: "#000000",
+                                        fontSize: 11,
+                                        fillColor: "#dadada",
+                                        margin: [0, 0, 0, 0],
+                                        text: 'Pruebas de bombeo'
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    content: [],
+                    styles: {
+                        header: {
+                            bold: true,
+                            fontSize: 18
+                        },
+                        body_table_header: {
+                            alignment: "center",
+                            border: [false, false, false, false],
+                            color: "#000",
+                            fillColor: "#b6dcff",
+                            fontSize: 12
+                        },
+                        body_table: {
+                            alignment: "center",
+                            border: [false, true, false, false],
+                            color: "#000000",
+                            fillColor: "#dadad3",
+                            fontSize: 12
+                        }
+                    }
                 }
             }
         },
-        components: {Carousel, Slide},
+        components: {Carousel, Slide, buttonGenerateReport},
         methods: {
+            select_bomb_test(item) {
+                this.bomb_test = item;
+            },
             async register_bomb_test() {
                 if (this.data_bomb_test.water_well && this.data_bomb_test.well_depth && this.data_bomb_test.client && this.data_bomb_test.ubication && this.data_bomb_test.well_diameter 
                 && this.data_bomb_test.proof && this.data_bomb_test.flow && this.data_bomb_test.supervisor && this.data_bomb_test.tube_aforo && this.data_bomb_test.disk_aforo && this.data_bomb_test.meters_well 
                 && this.data_bomb_test.hours_init && this.data_bomb_test.latitude && this.data_bomb_test.logitude && this.data_bomb_test.pump_model && this.data_bomb_test.suction_distance) {
                     try {
-                        const res = await axios.post('registerBombTest', this.data_bomb_test)
-                        console.log(res);
+                        const {data} = await axios.post('registerBombTest', this.data_bomb_test)
+                        this.data_bomb_test = {
+                                water_well: null,
+                                well_depth: null,
+                                client: null,
+                                ubication: null,
+                                well_diameter: null,
+                                proof: null,
+                                flow: null,
+                                supervisor: null,
+                                tube_aforo: null,
+                                disk_aforo: null,
+                                meters_well: null,
+                                hours_init: null,
+                                latitude: null,
+                                logitude: null,
+                                pump_model: null,
+                                suction_distance: null
+                        };
+                        this.bomb_tests = data;
+                        this.$toasted.success('Prueba registrada', {duration: 800, icon : 'check'})
                     } catch (error) {
                         console.log(error);
                     }
@@ -217,11 +359,43 @@
                     this.$toasted.error('Complete todos los campos', {duration: 800, icon : 'exclamation-triangle'})
                 }
             },
+            async register_field_bomb_test() {
+                if (this.data_bomb_test_field.accumulated && this.data_bomb_test_field.pressure_psi && this.data_bomb_test_field.instant_measurement) {
+                    this.data_bomb_test_field.bomb_test_id = this.bomb_test.id;
+                    try {
+                        await axios.post('registerFieldBombTest', this.data_bomb_test_field);
+                        this.data_bomb_test_field = {
+                            accumulated: null,
+                            instant_measurement: null,
+                            water_column: null,
+                            pressure_psi: null,
+                            measured_from_edge: null,
+                            temperature: null,
+                            ph: null,
+                            conduct: null,
+                            ppm: null,
+                            tds: null,
+                            turbidity: null,
+                            observation: null,
+                            bomb_test_id: null
+                        };
+                        this.$toasted.success('Campos registrados', {duration: 800, icon : 'check'})
+                    } catch (error) {
+                        console.log(error);
+                    }
+                } else {
+                    this.$toasted.error('Complete todos los campos obligatorios', {duration: 800, icon : 'exclamation-triangle'})
+                }
+            },
+            async finally_bomb_test() {
+                const {data} = await axios.post('finallyBombTest', this.bomb_test);
+                this.bomb_tests = data;
+                this.$toasted.success('Campos registrados', {duration: 800, icon : 'check'})
+            },
             async get_bomb_test() {
                 try {
                     const { data } = await axios.get('getBombTest')
                     this.bomb_tests = data;
-                    console.log(data);
                 } catch (error) {
                     console.log(error);
                 }
@@ -232,6 +406,7 @@
         },
         async mounted() {
             await this.get_bomb_test();
+            this.bomb_test = this.bomb_tests[0];
         }
     }
 </script>

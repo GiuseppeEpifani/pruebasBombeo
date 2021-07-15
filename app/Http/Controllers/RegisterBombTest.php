@@ -32,6 +32,6 @@ class RegisterBombTest extends Controller
                 'meters_well' => $request->meters_well, 'latitude' => $request->latitude, 'logitude' => $request->logitude, 'pump_model' => $request->pump_model, 'suction_distance' => $request->suction_distance, 'user_id' => Auth::user()->id];
         
         $new_data = BombTest::create($data);
-        return response()->json($new_data);
+        return response()->json(BombTest::all());
     }
 }

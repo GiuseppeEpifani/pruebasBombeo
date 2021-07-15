@@ -230,11 +230,6 @@ return [
             'text' => 'Registrar pruebas',
             'url'  => '/',
             'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'Exportar pruebas',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
         ]
     ],
 

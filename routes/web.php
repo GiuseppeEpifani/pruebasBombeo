@@ -20,4 +20,6 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::post('/registerBombTest', App\Http\Controllers\RegisterBombTest::class)->name('registerBombTest');
+Route::post('/registerFieldBombTest', App\Http\Controllers\RegisterFieldBombTest::class)->name('registerFieldBombTest');
+Route::post('/finallyBombTest', App\Http\Controllers\FinallyBombTest::class)->name('finallyBombTest');
 Route::get('/getBombTest', App\Http\Controllers\GetBombTest::class)->name('getBombTest');
