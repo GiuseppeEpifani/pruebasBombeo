@@ -103,12 +103,12 @@
                                 </div>
                             </div>
                         </template>
-                        <template>
+                        <template v-if="field_bomb_tests.filter(item => item.bomb_test_id == test.id).length === 0">
                             <strong>Sin campos registrados</strong>
                         </template>
                     </div>
                     <div class="card-footer">
-                        Creado el: <strong>{{format_date_human(test.created_at)}}</strong>                
+                        Creado: <strong>{{format_date_human(test.created_at)}}</strong>                
                     </div>
                 </div>
             </template>

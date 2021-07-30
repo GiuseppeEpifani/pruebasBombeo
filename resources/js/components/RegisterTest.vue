@@ -111,14 +111,7 @@
                                             Pozo: <strong>{{item.water_well}}</strong> - Supervisor: <strong>{{item.supervisor}}</strong>
                                         </div>
                                         <div class="col-auto" style="cursor: pointer;" title="Exportar prueba">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <buttonGenerateReport v-if="item.status == 2" :bomb_test="bomb_test" />
-                                                </div>
-                                                <div class="col">
-                                                    <button type="button" class="btn btn-danger" @click="delete_bomb_test(item)"><i class="fas fa-trash-alt"></i></button>
-                                                </div>
-                                            </div>
+                                            <button type="button" class="btn btn-danger" @click="delete_bomb_test(item)"><i class="fas fa-trash-alt"></i></button>
                                         </div>
                                     </div>
                                 </li>
@@ -358,7 +351,8 @@
             async finally_bomb_test() {
                 const {data} = await axios.post('finallyBombTest', this.bomb_test);
                 this.bomb_tests = data;
-                this.$toasted.success('Campos registrados', {duration: 800, icon : 'check'})
+                this.bomb_test = this.bomb_tests[0];
+                this.$toasted.success('Prueba finalizada', {duration: 800, icon : 'check'})
             },
             async delete_bomb_test(item) {
                 const {data} = await axios.post('deleteBombTest', item);
