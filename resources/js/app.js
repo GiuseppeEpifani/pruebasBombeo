@@ -9,6 +9,8 @@ require('./bootstrap');
 window.Vue = require('vue').default;
 
 Vue.component('register-test', require('./components/RegisterTest.vue').default);
+Vue.component('view-test', require('./components/ViewTest.vue').default);
+
 import Toasted from 'vue-toasted';
 Vue.use(Toasted, {
     iconPack : 'fontawesome'

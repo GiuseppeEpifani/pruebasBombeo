@@ -6,7 +6,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col">
-                                <strong>Registrar prueba</strong>                            
+                                <strong>Registrar prueba</strong>            
                             </div>
                             <div v-if="!hide_card" class="col-auto" style="cursor: pointer" @click="hide_show_card_register(true)">
                                 <i class="fas fa-eye-slash"></i>
@@ -21,11 +21,11 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="client">Cliente</label>
-                                    <input v-model="data_bomb_test.client" type="email" class="form-control" id="client">
+                                    <input v-model="data_bomb_test.client" type="text" class="form-control" id="client">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="supervisor">Supervisor</label>
-                                    <input v-model="data_bomb_test.supervisor" type="password" class="form-control" id="supervisor">
+                                    <input v-model="data_bomb_test.supervisor" type="text" class="form-control" id="supervisor">
                                 </div>
                             </div>
                             <div class="form-row">
@@ -104,17 +104,29 @@
                     <div class="card-header"><strong>Pruebas registradas</strong></div>
                     <div class="card-body" style="padding: 0 !important;">
                         <ul class="list-group">
-                            <li v-for="item in bomb_tests" class="list-group-item" :class="{'active': bomb_test.id == item.id}" aria-current="true" style="cursor: pointer;">
-                                <div class="row" @click="select_bomb_test(item)">
-                                    <div class="col">
-                                        Pozo: <strong>{{item.water_well}}</strong> - Supervisor: <strong>{{item.supervisor}}</strong>
+                            <template v-for="item in bomb_tests">
+                                <li class="list-group-item" :class="{'active': bomb_test.id == item.id}" aria-current="true" style="cursor: pointer;">
+                                    <div class="row" @click="select_bomb_test(item)">
+                                        <div class="col">
+                                            Pozo: <strong>{{item.water_well}}</strong> - Supervisor: <strong>{{item.supervisor}}</strong>
+                                        </div>
+                                        <div class="col-auto" style="cursor: pointer;" title="Exportar prueba">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <buttonGenerateReport v-if="item.status == 2" :bomb_test="bomb_test" />
+                                                </div>
+                                                <div class="col">
+                                                    <button type="button" class="btn btn-danger" @click="delete_bomb_test(item)"><i class="fas fa-trash-alt"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-auto" style="cursor: pointer;" title="Exportar prueba" v-if="item.status == 2">
-                                        <buttonGenerateReport :bomb_test="bomb_test" />
-                                    </div>
-                                </div>
-                            </li>
+                                </li>
+                            </template>
                         </ul>
+                    </div>
+                    <div class="card-body mx-3 d-flex justify-content-center" v-if="bomb_tests.length == 0 ">
+                        <strong class="align-self-center">Sin pruebas registradas</strong>
                     </div>
                 </div>
             </div>
@@ -125,12 +137,12 @@
                                 <div class="col">
                                     <strong>Ingreso de datos</strong>
                                 </div>
-                                <div class="col-auto" style="cursor: pointer" v-if="bomb_test.status == 1">
+                                <div class="col-auto" style="cursor: pointer" v-if="bomb_tests.length > 0 && bomb_test.status == 1">
                                     <button type="button" class="btn btn-success" @click="finally_bomb_test">Finalizar prueba</button>
                                 </div>
                         </div>
                     </div>
-                    <div class="card-body mx-3" v-if="bomb_test.status == 1">
+                    <div class="card-body mx-3" v-if="bomb_tests.length > 0 && bomb_test.status == 1">
                         <carousel :per-page="1" :navigationEnabled="true">
                             <slide>
                                 <div class="form-group mx-2 mt-4">
@@ -160,7 +172,7 @@
                                 <div class="form-group mx-2 mt-4">
                                     <div>
                                         <label for="temperature">Temperatura(C°)</label>
-                                        <input v-model="data_bomb_test_field.temperature" type="text" class="form-control" id="temperature">
+                                        <input v-model="data_bomb_test_field.temperature" type="number" class="form-control" id="temperature">
                                     </div>
                                 </div>
                             </slide>
@@ -168,7 +180,7 @@
                                 <div class="form-group mx-2 mt-4">
                                     <div>
                                         <label for="ph">PH</label>
-                                        <input v-model="data_bomb_test_field.ph" type="text" class="form-control" id="ph">
+                                        <input v-model="data_bomb_test_field.ph" type="number" class="form-control" id="ph">
                                     </div>
                                 </div>
                             </slide>
@@ -176,7 +188,7 @@
                                 <div class="form-group mx-2 mt-4">
                                     <div>
                                         <label for="inputZip">Conductividad(uS)</label>
-                                        <input v-model="data_bomb_test_field.conduct" type="text" class="form-control" id="inputZip">
+                                        <input v-model="data_bomb_test_field.conduct" type="number" class="form-control" id="inputZip">
                                     </div>
                                 </div>
                             </slide>
@@ -184,7 +196,7 @@
                                 <div class="form-group mx-2 mt-4">
                                     <div>
                                         <label for="ppm">PPM</label>
-                                        <input v-model="data_bomb_test_field.ppm" type="text" class="form-control" id="ppm">
+                                        <input v-model="data_bomb_test_field.ppm" type="number" class="form-control" id="ppm">
                                     </div>
                                 </div>
                             </slide>
@@ -192,7 +204,7 @@
                                 <div class="form-group mx-2 mt-4">
                                     <div>
                                         <label for="tds">TDS/Imhoff(ml/L)</label>
-                                        <input v-model="data_bomb_test_field.tds" type="text" class="form-control" id="tds">
+                                        <input v-model="data_bomb_test_field.tds" type="number" class="form-control" id="tds">
                                     </div>
                                 </div>
                             </slide>
@@ -200,7 +212,7 @@
                                 <div class="form-group mx-2 mt-4">
                                     <div>
                                         <label for="turbidity">Turbiedad</label>
-                                        <input v-model="data_bomb_test_field.turbidity" type="text" class="form-control" id="turbidity">
+                                        <input v-model="data_bomb_test_field.turbidity" type="number" class="form-control" id="turbidity">
                                     </div>
                                 </div>
                             </slide>
@@ -219,8 +231,11 @@
                             </slide>
                         </carousel>
                     </div>
-                    <div class="card-body mx-3 d-flex justify-content-center" v-if="bomb_test.status == 2">
+                    <div class="card-body mx-3 d-flex justify-content-center" v-if="bomb_tests.length > 0 && bomb_test.status == 2">
                         <strong class="align-self-center">La prueba ya ha sido finalizada.</strong>
+                    </div>
+                    <div class="card-body mx-3 d-flex justify-content-center" v-if="bomb_tests.length == 0 ">
+                        <strong class="align-self-center">Sin pruebas registradas</strong>
                     </div>
                 </div>
             </div>
@@ -271,54 +286,6 @@
                     observation: null,
                     bomb_test_id: null
                 },
-                docDefinition: {
-                    compress: false,
-                    pageSize: "LETTER",
-                    pageMargins: [30, 20, 30, 20],
-                    footer: {
-                        table: {
-                            heights: 0,
-                            headerRows: 1,
-                            widths: ["*"],
-                            body: 
-                            [
-                                [
-                                    {
-                                        alignment: "center",
-                                        bold: true,
-                                        border: [false, false, false, false],
-                                        color: "#000000",
-                                        fontSize: 11,
-                                        fillColor: "#dadada",
-                                        margin: [0, 0, 0, 0],
-                                        text: 'Pruebas de bombeo'
-                                    }
-                                ]
-                            ]
-                        }
-                    },
-                    content: [],
-                    styles: {
-                        header: {
-                            bold: true,
-                            fontSize: 18
-                        },
-                        body_table_header: {
-                            alignment: "center",
-                            border: [false, false, false, false],
-                            color: "#000",
-                            fillColor: "#b6dcff",
-                            fontSize: 12
-                        },
-                        body_table: {
-                            alignment: "center",
-                            border: [false, true, false, false],
-                            color: "#000000",
-                            fillColor: "#dadad3",
-                            fontSize: 12
-                        }
-                    }
-                }
             }
         },
         components: {Carousel, Slide, buttonGenerateReport},
@@ -351,6 +318,7 @@
                                 suction_distance: null
                         };
                         this.bomb_tests = data;
+                        this.bomb_test = data[0];
                         this.$toasted.success('Prueba registrada', {duration: 800, icon : 'check'})
                     } catch (error) {
                         console.log(error);
@@ -391,6 +359,12 @@
                 const {data} = await axios.post('finallyBombTest', this.bomb_test);
                 this.bomb_tests = data;
                 this.$toasted.success('Campos registrados', {duration: 800, icon : 'check'})
+            },
+            async delete_bomb_test(item) {
+                const {data} = await axios.post('deleteBombTest', item);
+                this.bomb_tests = data;
+                this.bomb_test = (this.bomb_tests[0]) ? this.bomb_tests[0] : {};
+                this.$toasted.success('Prueba eliminada', {duration: 800, icon : 'check'})
             },
             async get_bomb_test() {
                 try {

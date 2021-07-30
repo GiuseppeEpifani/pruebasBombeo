@@ -230,6 +230,11 @@ return [
             'text' => 'Registrar pruebas',
             'url'  => '/',
             'icon' => 'fas fa-fw fa-user',
+        ],
+        [
+            'text' => 'Ver pruebas',
+            'url'  => 'view_test',
+            'icon' => 'fas fa-eye',
         ]
     ],
 
